@@ -1,4 +1,4 @@
-import { createUser, userExists } from "./auth.model.js";
+import { createUser, userExists, registerTokenAndEmailModel, existEmailSessionModel } from "./auth.model.js";
 
 import jwt from 'jsonwebtoken';
 
@@ -29,30 +29,55 @@ export async function registerCtrl(req, res){
 
 export async function loginCtrl(req, res){
     const {email, password} = req.body;
-    console.log(email);
-    console.log(password);
+    // console.log(email);
+    // console.log(password);
     // const dd = await userExists(email, password);
     // console.log('dddd'+dd);
-    if(await userExists(email, password)){
+    const existEmailInSesion = await existEmailSessionModel(email);
+    const existUserInBBDD =  await userExists(email, password);
+    console.log('controller: '+existEmailInSesion);
+    if( existUserInBBDD && !existEmailInSesion){
     // console.log('existen');
     // }else{
     //     console.log('no existe');
     // }
 
         const token = jwt.sign({email}, secretKey);
+
+        await registerTokenAndEmailModel(email,token);
+   
+
+        
+
+
+        res.send({
+ 
+                respuesta: `SessionIniciada.${token}`
+           
+        });
+        // console.log('controller: '+token);
+    }else if( existUserInBBDD && existEmailInSesion){
+        // res.status(404).send('Usuario/Contraseña erróneos');
+        
         res.send({
             // access_token: 'hola'
-            respuesta:'ok'
+            respuesta:'UsuarioEnSesion.'
         });
-        console.log(token);
+
     }else{
         // res.status(404).send('Usuario/Contraseña erróneos');
+        
         res.send({
             // access_token: 'hola'
-            respuesta:'nook'
+            respuesta:'UsuarioIncorrecto.'
         });
         console.log('error de usuario');
 
     }
     
 }
+
+
+
+
+
