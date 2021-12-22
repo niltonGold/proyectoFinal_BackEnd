@@ -17,7 +17,11 @@ export async function registerCtrl(req, res){
         res.status(409).send('El usuario ya existe');// es un conflict por que el usuario ya existe en la BBDD 
     }else{
         await createUser(req.body);
-        res.status(201).send('Usuario Creado');
+        // res.status(201).send('Usuario Creado');
+        res.send({
+            // access_token: 'hola'
+            respuesta: 'usuario creado',
+        });
     }
 }
 
@@ -36,13 +40,14 @@ export async function loginCtrl(req, res){
     const existEmailInSesion = await existEmailSessionModel(email);
     const existUserInBBDD =  await userExists(email, password);
     console.log('controller: '+existEmailInSesion);
+    const token = jwt.sign({email}, secretKey);
     if( existUserInBBDD && !existEmailInSesion){
     // console.log('existen');
     // }else{
     //     console.log('no existe');
     // }
 
-        const token = jwt.sign({email}, secretKey);
+        
 
         await registerTokenAndEmailModel(email,token);
    
@@ -61,7 +66,7 @@ export async function loginCtrl(req, res){
         
         res.send({
             // access_token: 'hola'
-            respuesta:'UsuarioEnSesion.'
+            respuesta:`UsuarioEnSesion.${token}`
         });
 
     }else{

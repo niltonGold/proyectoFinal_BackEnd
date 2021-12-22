@@ -58,9 +58,18 @@ export async function deleteUserByDniCtrl(req, res) {
     let respuesta = await deleteUserByDni(dni); 
     console.log(respuesta);
     if ( respuesta.deletedCount !== 0){
-        res.status(200).send('Usuario borrado correctamente');
+        // res.status(200).send('Usuario borrado correctamente');
+        res.send({
+            // access_token: 'hola'
+            respuesta:'usuario borrado correctamente.'
+        });
+
     }else{
-        res.status(404).send('Usuario no encontrado');
+        // res.status(404).send('Usuario no encontrado');
+        res.send({
+            // access_token: 'hola'
+            respuesta:'usuario no encontrado'
+        });
     }
 
 
@@ -87,7 +96,11 @@ export async function patchUserByDniCtrl(req, res) {
     console.log(respuesta);
     if ( respuesta !== 'error'){
             let user = await retrieveUserByDni(dni);
-            res.json(user); 
+            // res.json(user); 
+            res.send({
+                // access_token: 'hola'
+                respuesta: user.nombre,
+            });
     }else {
         res.status(404).send('Solo puedes modificar email y/o contraseña');
     }
